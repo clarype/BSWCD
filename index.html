@@ -1,0 +1,148 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Leaflet debug page</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.3/dist/leaflet.css" integrity="sha512-07I2e+7D8p6he1SIM+1twR5TIrhUQn9+I6yjqD53JQjFiMf8EtC93ty0/5vJTZGF8aAocvHYNEDJajGdNx1IsQ==" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.0.3/dist/leaflet-src.js" integrity="sha512-WXoSHqw/t26DszhdMhOXOkI7qCiv5QWXhH9R7CgvgZMHz1ImlkVQ3uNsiQKu5wwbbxtPzFXd1hK4tzno2VqhpA==" crossorigin=""></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="progress/css/cluster.css" />
+
+    <script src="progress/JS/cluster1.js"></script>
+    <script src="progress/JS/cluster.js"></script>
+
+    <script src="progress/points/BeeBuddies.js"></script>
+    <script src="progress/points/UrbanPrairie.js"></script>
+    <script src="progress/points/PlantSales.js"></script>
+    <script src="progress/points/InvasiveSpeciesRemoval.js"></script>
+
+</head>
+<body>
+<p>This is a basic interactive web map with simple map element features. The map as a clustering function based on zoom
+    level and marker cluster proximity. The markers are grouped by theme, and can be added or removed from the map
+    using the control panel in the upper right section of the map.  All the markers have arbitrary coordinates and do
+    not represent any current data from BSWCD. The blue markers when visible have a 'mouseover' property that enables
+    a 'popup' that can display text, images, video and hyperlinks to other webpages. There are many other map element
+    that can be added to this map this is just a sample.
+</p>
+<div id="map"></div>
+<span>Mouse over a cluster to see the bounds of its points and click a cluster to zoom to those bounds</span>
+<script type="text/javascript">
+
+    var tiles = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '&copy; <a href="#">Peter @ GitHub</a>|<a href="http://osm.org/copyright">OpenStreetMap</a> contributors, Points &copy 2018 LINZ'
+        }),
+        latlng = L.latLng(44.5650, -123.2630),
+
+        Bee = BeeBuddiesPoints.length,
+        Prairie = UrbanPrairiePoints.length,
+        Plant = PlantSalesPoints.length,
+        Invasive = InvasiveSpeciesRemovalPoints.length;
+
+    var map = L.map('map', {center: latlng, zoom: 13, layers: [tiles]});
+
+    var mcg = L.markerClusterGroup(),
+        group1 = L.featureGroup.subGroup(mcg),// use `L.featureGroup.subGroup(parentGroup)` instead of `L.featureGroup()` or `L.layerGroup()`!
+        group2 = L.featureGroup.subGroup(mcg),
+        group3 = L.featureGroup.subGroup(mcg),
+        group4 = L.featureGroup.subGroup(mcg),
+        control = L.control.layers(null, null, { collapsed: false }),
+        i, a, title, marker;
+    mcg.addTo(map);
+
+
+    for (i = 0; i < Bee; i++) {
+        a = BeeBuddiesPoints[i];
+        title = a[2];
+        marker = L.marker([a[0], a[1]], { title: title });
+        marker.bindPopup(title);
+
+        marker.on('mousemove', function (e) {
+            this.openPopup();
+        });
+        marker.on('mouseup', function (e) {
+            this.closePopup();
+        });
+
+        marker.addTo(group2);
+    }
+
+    for (i = 0; i < Prairie; i++) {
+        a = UrbanPrairiePoints[i];
+        title = a[2];
+        marker = L.marker([a[0], a[1]], { title: title });
+        marker.bindPopup(title);
+
+        marker.on('mousemove', function (e) {
+            this.openPopup();
+        });
+        marker.on('mouseup', function (e) {
+            this.closePopup();
+        });
+
+        marker.addTo(group1);
+    }
+
+    for (i = 0; i < Plant; i++) {
+        a = PlantSalesPoints[i];
+        title = a[2];
+        marker = L.marker([a[0], a[1]], { title: title });
+        marker.bindPopup(title);
+
+        marker.on('mousemove', function (e) {
+            this.openPopup();
+        });
+        marker.on('mouseup', function (e) {
+            this.closePopup();
+        });
+
+        marker.addTo(group3);
+    }
+
+    for (i = 0; i < Invasive; i++) {
+        a = InvasiveSpeciesRemovalPoints[i];
+        title = a[2];
+        marker = L.marker([a[0], a[1]], { title: title });
+        marker.bindPopup(title);
+
+        marker.on('mousemove', function (e) {
+            this.openPopup();
+        });
+        marker.on('mouseup', function (e) {
+            this.closePopup();
+        });
+
+        marker.addTo(group4);
+    }
+
+    L.Map = L.Map.extend({
+
+    });
+
+    control.addOverlay(group1, 'Urban Prairies');
+    control.addOverlay(group2, 'Bee Buddies');
+    control.addOverlay(group3, 'Plant Sales');
+    control.addOverlay(group4, 'Invasive Species Removal');
+    control.addTo(map);
+
+    group1.addTo(map); // Adding to map now adds all child layers into the parent group.
+    group2.addTo(map);
+    group3.addTo(map);
+    group4.addTo(map);
+
+
+    // Set-up buttons.
+
+    document.getElementById("add").addEventListener("click", function () {
+        map.addLayer(mcg);
+    });
+
+    document.getElementById("remove").addEventListener("click", function () {
+        map.removeLayer(mcg);
+    });
+
+</script>
+</body>
+</html>
